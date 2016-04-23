@@ -138,16 +138,20 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
     }
 
     // Check if the game is over.
-    var gameOverRegex = /\[Power\] GameState\.DebugPrintPower\(\) - TAG_CHANGE Entity=(.*) tag=PLAYSTATE value=(LOST|WON|TIED)$/;
+    var gameOverRegex = /\[Power\] GameState\.DebugPrintPower\(\) - TAG_CHANGE Entity=(.*) tag=PLAYSTATE value=(LOST|WON|TIED|CONCEDED)$/;
     if (gameOverRegex.test(line)) {
       var parts = gameOverRegex.exec(line);
       // Set the status for the appropriate player.
       parserState.players.forEach(function (player) {
         if (player.name === parts[1]) {
-          player.status = parts[2];
+          if (parts[2] === 'CONCEDED') {
+            player.conceded = true;
+          } else {
+            player.status = parts[2];
+          }
         }
       });
-      parserState.gameOverCount++;
+      if (parts[2] !== 'CONCEDED') parserState.gameOverCount++;
       // When both players have lost, emit a game-over event.
       if (parserState.gameOverCount === 2) {
         log.gameOver('The current game has ended.');
