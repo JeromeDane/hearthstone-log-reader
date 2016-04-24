@@ -6,7 +6,7 @@ This module is simple. It takes care of the low-level monitoring of the Hearthst
 
 This is a fork of [chevex-archived/hearthstone-log-watcher](https://github.com/chevex-archived/hearthstone-log-watcher) at `v3.0.1`. It is an attempt to add a lot more functionality out of the box. This may have been beyond the scope of the original project, and I wanted to be able hack this as needed for my own work, which is why I created a fork instead of submitting pull requests. All credit for the base log file reading and initial parsing methods goes to the original authors.
 
-## OUTDATED ...
+## OUTDATED DOCUMENTATION ...
 
 Everything below this is a bit outdated. New features still need to be documented tests need to be updated. I will update all of this soon.
 
