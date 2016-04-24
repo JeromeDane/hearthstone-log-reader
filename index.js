@@ -4,6 +4,12 @@ var fs = require('fs');
 var path = require('path');
 var os = require('os');
 var extend = require('extend');
+var Game = require('./lib/game');
+var parsePlayerLogEvent = require('./lib/log-events/new-player.js');
+var parseGameResultLogEvent = require('./lib/log-events/game-result.js');
+var parseGameStateLogEvent = require('./lib/log-events/game-state.js');
+var parseLoadingScreenLogEvent = require('./lib/log-events/loading-screen.js');
+var parseZoneChangeLogEvent = require('./lib/log-events/zone-change.js');
 
 var defaultOptions = {
   endOfLineChar: os.EOL
@@ -81,6 +87,8 @@ LogWatcher.prototype.start = function () {
   };
 };
 
+LogWatcher.prototype._games = {};
+
 LogWatcher.prototype.stop = function () {};
 
 LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
@@ -93,72 +101,18 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
   // Iterate over each line in the buffer.
   buffer.toString().split(this.options.endOfLineChar).forEach(function (line) {
 
-    // Check if a card is changing zones.
-    var zoneChangeRegex = /^\[Zone\] ZoneChangeList.ProcessChanges\(\) - id=\d* local=.* \[name=(.*) id=(\d*) zone=.* zonePos=\d* cardId=(.*) player=(\d)\] zone from ?(FRIENDLY|OPPOSING)? ?(.*)? -> ?(FRIENDLY|OPPOSING)? ?(.*)?$/
-    if (zoneChangeRegex.test(line)) {
-      var parts = zoneChangeRegex.exec(line);
-      var data = {
-        cardName: parts[1],
-        entityId: parseInt(parts[2]),
-        cardId: parts[3],
-        playerId: parseInt(parts[4]),
-        fromTeam: parts[5],
-        fromZone: parts[6],
-        toTeam: parts[7],
-        toZone: parts[8]
-      };
-      log.zoneChange('%s moved from %s %s to %s %s.', data.cardName, data.fromTeam, data.fromZone, data.toTeam, data.toZone);
-      self.emit('zone-change', data);
+    if(self.options.verbose && line.replace(/\s/g, '') !== '' && !line.match(/^(\[Asset|\(Filename)/)) console.log(line);
 
-      // Only zone transitions show both the player ID and the friendly or opposing zone type. By tracking entities going into
-      // the "PLAY (Hero)" zone we can then set the player's team to FRIENDLY or OPPOSING. Once both players are associated with
-      // a team we can emite the game-start event.
-      if (data.toZone === 'PLAY (Hero)') {
-        parserState.players.forEach(function (player) {
-          if (player.id === data.playerId) {
-            player.team = data.toTeam;
-            parserState.playerCount++;
-            if (parserState.playerCount === 2) {
-              log.gameStart('A game has started.');
-              self.emit('game-start', parserState.players);
-            }
-          }
-        });
-      }
+    // always have a current game instance in place
+    if(!self._games.current) {
+      self._games.current = new Game();
     }
 
-    // Check for players entering play and track their team IDs.
-    var newPlayerRegex = /\[Power\] GameState\.DebugPrintPower\(\) - TAG_CHANGE Entity=(.*) tag=PLAYER_ID value=(.)$/;
-    if (newPlayerRegex.test(line)) {
-      var parts = newPlayerRegex.exec(line);
-      parserState.players.push({
-        name: parts[1],
-        id: parseInt(parts[2])
-      });
-    }
-
-    // Check if the game is over.
-    var gameOverRegex = /\[Power\] GameState\.DebugPrintPower\(\) - TAG_CHANGE Entity=(.*) tag=PLAYSTATE value=(LOST|WON|TIED|CONCEDED)$/;
-    if (gameOverRegex.test(line)) {
-      var parts = gameOverRegex.exec(line);
-      // Set the status for the appropriate player.
-      parserState.players.forEach(function (player) {
-        if (player.name === parts[1]) {
-          if (parts[2] === 'CONCEDED') {
-            player.conceded = true;
-          } else {
-            player.status = parts[2];
-          }
-        }
-      });
-      if (parts[2] !== 'CONCEDED') parserState.gameOverCount++;
-      // When both players have lost, emit a game-over event.
-      if (parserState.gameOverCount === 2) {
-        log.gameOver('The current game has ended.');
-        self.emit('game-over', parserState.players);
-        parserState.reset();
-      }
-    }
+    parseZoneChangeLogEvent(line, self);
+    parsePlayerLogEvent(line, self);
+    parseGameResultLogEvent(line, self);
+    parseGameStateLogEvent(line, self);
+    parseLoadingScreenLogEvent(line, self);
 
   });
 };
