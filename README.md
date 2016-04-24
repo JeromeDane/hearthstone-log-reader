@@ -2,6 +2,14 @@
 
 This module is simple. It takes care of the low-level monitoring of the Hearthstone log file and emits events based on what happens in the log file. Use this module if you want to build your own Hearthstone deck tracker and don't want to do the work of parsing through the nasty log file yourself.
 
+- [Credits](#credits)
+- [Usage](#usage)
+  - [Parse an existing log file](parse-an-existing-log-file)
+
+# [WORK IN PROGRESS]
+
+This fork is a work in progress and is currently still under development and currently buggy. Will be fixed/updated soon.
+
 ## Credits
 
 This is a fork of [chevex-archived/hearthstone-log-watcher](https://github.com/chevex-archived/hearthstone-log-watcher) at `v3.0.1`. It is an attempt to add a lot more functionality out of the box. This may have been beyond the scope of the original project, and I wanted to be able hack this as needed for my own work, which is why I created a fork instead of submitting pull requests. All credit for the base log file reading and initial parsing methods goes to the original authors.
@@ -56,20 +64,11 @@ Starts watching the log file and parses any changes to it.
 
 Stops the watcher.
 
-### parseBuffer(buffer [, parserState])
+### parseBuffer(buffer)
 
 Parses a buffer (log file).
 
 Useful if you have log files that you want to parse without watching them. See the usage example above for how to get the buffer from existing files.
-
-The second argument, `parserState`, is optional, and will be created for you if you omit it.
-
-If you want to use your own `parserState` instance it must have these properties:
-
-* **players**: `Array` (keeps track of the players)
-* **playerCount**: `Number` (keeps track of when players enter the game to know when to emit the start event)
-* **gameOverCount**: `Number` (keeps track of when players won/lost/tied to know when the game is over)
-* **reset**: `Function` (resets the `parserState` instance at the end of a game)
 
 ## Events
 
@@ -81,36 +80,165 @@ The `game-start` event fires at the beginning of a match when the watcher has ga
 
 Callback Arguments:
 
-- **players** - an array of the players in the game and what team they are on (friendly or opposing);
+- **game** - An object representing the current game.
 
-Example player object:
+Example game object:
 
 ```javascript
 {
-  name: 'Hologrid',
-  id: 1,
-  team: 'FRIENDLY'
+  player1: {
+    drew: {
+      GVG_110: { name: 'Dr. Boom', count: 1 },
+      NEW1_030: { name: 'Deathwing', count: 1 },
+      EX1_308: { name: 'Soulfire', count: 1 },
+      EX1_249: { name: 'Baron Geddon', count: 1 },
+      GAME_005: { name: 'The Coin', count: 1 }
+    },
+    id: 1,
+    hero: 'Gul\'dan',
+    heroId: 'HERO_07',
+    class: 'Warlock',
+    coin: true,
+    name: 'Loki'
+  },
+  player2: {
+    id: 2,
+    hero: 'Malfurion Stormrage',
+    heroId: 'HERO_06',
+    class: 'Druid',
+    name: 'The Innkeeper'
+  },
+  turn: 1,
+  activePlayer: 2,
+  state: 'RUNNING',
+  start: 'Sun Apr 24 2016 09:09:24 GMT-0400 (EDT)'
 }
 ```
 
-### **game-over**
+See `game-complete` event documentation below for more details about the `game` object.
 
-The `game-over` event fires at the end of a match and includes additional data showing who won and who lost.
+### **game-complete**
+
+The `game-complete` event fires at the end of a match and includes additional data showing who won and who lost.
 
 Callback Arguments:
 
-- **players** - the same array of players from the `game-start` event except the players have an additional status property.
+- **game** - the same game object from the `game-start` event with additional, final results.
 
-Example player object:
+Example game object at the end of the game:
 
 ```javascript
 {
-  name: 'Hologrid',
-  id: 1,
-  team: 'FRIENDLY',
-  status: 'WON'
+  player1: {
+    drew: {
+      GVG_110: { name: 'Dr. Boom', count: 1 },
+      EX1_308: { name: 'Soulfire', count: 2 },
+      EX1_249: { name: 'Baron Geddon', count: 1 },
+      GAME_005: { name: 'The Coin', count: 1 }
+    },
+    id: 1,
+    hero: 'Gul\'dan',
+    heroId: 'HERO_07',
+    class: 'Warlock',
+    coin: true,
+    name: 'Loki',
+    result: 'LOST',
+    conceded: true,
+    played: {
+      EX1_308: { name: 'Soulfire', count: 1 }
+    },
+    discarded: {
+      EX1_249: { name: 'Baron Geddon', count: 1 }
+    }
+  },
+  player2: {
+    id: 2,
+    hero: 'Malfurion Stormrage',
+    heroId: 'HERO_06',
+    class: 'Druid',
+    name: 'The Innkeeper',
+    played: {
+      CS1_042: { name: 'Goldshire Footman', count: 1 }
+    },
+    result: 'WON'
+  },
+  turn: 3,
+  activePlayer: 2,
+  state: 'COMPLETE',
+  start: 'Sun Apr 24 2016 09:09:24 GMT-0400 (EDT)',
+  end: 'Sun Apr 24 2016 09:12:31 GMT-0400 (EDT)'
 }
 ```
+
+The `player1` and `player2` properties each have `played` and `discarded` properties that shows all cards each player played or discarded throughout the entire game. `player1` also has a `drew` property that shows all of the cards the user drew throughout the game.
+
+This log watcher includes card names as they are written in the user's Hearthstone logs. If your application needs to be able to translate card names across locales, use the [Hearthstone JSON files](https://hearthstonejson.com/) to look up the localized names of cards by their ID.
+
+### **draw-card**
+
+The `draw-card` event fires whenever a player draws a card.
+
+Callback Arguments:
+
+- **playerNum** - `1` for the user or `2` for the opponent
+- **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
+- **cardName** - the localized name of the card as it appears in the user's log files
+
+Example:
+
+```javascript
+logWatcher.on('draw-card', function(playerNum, cardId, cardName) {
+  console.log('Player', playerNum, 'drew', cardName, '(' + cardId + ')');
+});
+```
+
+Sample output:
+
+> Player 1 drew Dr. Boom (GVG_110)
+
+### **play-card**
+
+The `play-card` event fires whenever a player plays a card.
+
+Callback Arguments:
+
+- **playerNum** - `1` for the user or `2` for the opponent
+- **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
+- **cardName** - the localized name of the card as it appears in the user's log files
+
+Example:
+
+```javascript
+logWatcher.on('play-card', function(playerNum, cardId, cardName) {
+  console.log('Player', playerNum, 'played', cardName, '(' + cardId + ')');
+});
+```
+
+Sample output:
+
+> Player 1 played Dr. Boom (GVG_110)
+
+### **discard-card**
+
+The `discard-card` event fires whenever a player discards a card.
+
+Callback Arguments:
+
+- **playerNum** - `1` for the user or `2` for the opponent
+- **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
+- **cardName** - the localized name of the card as it appears in the user's log files
+
+Example:
+
+```javascript
+logWatcher.on('discard-card', function(playerNum, cardId, cardName) {
+  console.log('Player', playerNum, 'discarded', cardName, '(' + cardId + ')');
+});
+```
+
+Sample output:
+
+> Player 1 discarded Dr. Boom (GVG_110)
 
 ### **zone-change**
 
@@ -161,7 +289,9 @@ A. This module doesn't provide any functionality like that. This is just a log w
 
 #### Q. Did you build a deck tracker that uses your own log watcher module?
 
-A. Why yes I did! You can find my Hearthpal Tracker [here](http://github.com/hearthpal/hearthpal-tracker).
+From the original authors before this fork:
+
+> A. Why yes I did! You can find my Hearthpal Tracker [here](http://github.com/hearthpal/hearthpal-tracker).
 
 #### Q. Why do some events seem to happen out of order?
 
