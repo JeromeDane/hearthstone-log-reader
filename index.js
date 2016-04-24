@@ -5,11 +5,11 @@ var path = require('path');
 var os = require('os');
 var extend = require('extend');
 var Game = require('./lib/game');
-var parsePlayerLogEvent = require('./lib/log-events/new-player.js');
-var parseGameResultLogEvent = require('./lib/log-events/game-result.js');
-var parseGameStateLogEvent = require('./lib/log-events/game-state.js');
-var parseLoadingScreenLogEvent = require('./lib/log-events/loading-screen.js');
-var parseZoneChangeLogEvent = require('./lib/log-events/zone-change.js');
+var parsePlayerLogEvent = require('./lib/log-parsers/new-player.js');
+var parseGameResultLogEvent = require('./lib/log-parsers/game-result.js');
+var parseGameStateLogEvent = require('./lib/log-parsers/game-state.js');
+var parseScreenChangeLogEvent = require('./lib/log-parsers/screen-change.js');
+var parseZoneChangeLogEvent = require('./lib/log-parsers/zone-change.js');
 
 var defaultOptions = {
   endOfLineChar: os.EOL
@@ -112,7 +112,7 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
     parsePlayerLogEvent(line, self);
     parseGameResultLogEvent(line, self);
     parseGameStateLogEvent(line, self);
-    parseLoadingScreenLogEvent(line, self);
+    parseScreenChangeLogEvent(line, self);
 
   });
 };
