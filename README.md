@@ -1,4 +1,4 @@
-# Hearthstone Log Watcher
+# Hearthstone Log Reader
 
 This module is simple. It takes care of the low-level monitoring of the [Hearthstone](http://us.battle.net/hearthstone/) log file and emits events based on what happens in the log file. Use this module if you want to build your own [Hearthstone](http://us.battle.net/hearthstone/) deck tracker and don't want to do the work of parsing through the nasty log file yourself.
 
@@ -24,15 +24,11 @@ This module is simple. It takes care of the low-level monitoring of the [Hearths
 
 # [WORK IN PROGRESS]
 
-This fork is a work in progress and is currently still under development and currently buggy. Will be fixed/updated soon.
+This fork is a work in progress and is currently still under heavy development. Stay tuned for updates.
 
 ## Credits
 
-This is a fork of [chevex-archived/hearthstone-log-watcher](https://github.com/chevex-archived/hearthstone-log-watcher) at `v3.0.1`. It is an attempt to add a lot more functionality out of the box. This may have been beyond the scope of the original project, and I wanted to be able hack this as needed for my own work, which is why I created a fork instead of submitting pull requests. All credit for the base log file reading and initial parsing methods goes to the original authors.
-
-## OUTDATED DOCUMENTATION ...
-
-Everything below this is a bit outdated. New features still need to be documented tests need to be updated. I will update all of this soon.
+This project is a heavily modified fork of [chevex-archived/hearthstone-log-watcher](https://github.com/chevex-archived/hearthstone-log-watcher), which I used to bootstrap my log file monitoring and initial parsing code. This fork adds functionality that may be beyond the scope of the original project. I also wanted to be able hack this as needed for my own work, which is why a fork was created instead of submitting pull requests. All credit for the base log file reading and initial parsing methods goes to the authors of the [original fork](https://github.com/chevex-archived/hearthstone-log-watcher).
 
 ## Prerequisites
 

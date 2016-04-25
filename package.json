@@ -1,7 +1,7 @@
 {
-  "name": "hearthstone-log-watcher",
-  "version": "3.0.1",
-  "description": "This simple module monitors the Hearthstone log file and emits events based on important events from the log.",
+  "name": "hearthstone-log-reader",
+  "version": "0.0.1",
+  "description": "Node module that monitors Hearthstone log file for changes and emits important events game events.",
   "main": "index.js",
   "dependencies": {
     "debug": "^2.2.0",
@@ -16,8 +16,9 @@
   },
   "keywords": [
     "hearthstone",
-    "deck tracker"
+    "deck tracker",
+    "log"
   ],
-  "author": "Chevex",
+  "author": "Jerome Dane <https://github.com/JeromeDane/>",
   "license": "ISC"
 }
