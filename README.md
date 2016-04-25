@@ -60,16 +60,19 @@ reader.on('game-start', function(game) {
 });
 reader.on('turn-start', function(turn, player) {
   console.log('Starting turn', turn, '(player ' + player.name + ')');
-})
-reader.on('play-card', function(player, cardId, cardName) {
-  console.log(player.name, 'played', cardName);
-})
+});
 reader.on('draw-card', function(player, cardId, cardName) {
   console.log(player.name, 'drew', cardName);
-})
+});
+reader.on('mulligan-card', function(player, cardId, cardName) {
+  console.log(player.name, 'mulliganed', cardName);
+});
+reader.on('play-card', function(player, cardId, cardName) {
+  console.log(player.name, 'played', cardName);
+});
 reader.on('discard-card', function(player, cardId, cardName) {
   console.log(player.name, 'discarded', cardName);
-})
+});
 reader.on('game-complete', function(game) {
   console.log('Game Complete:\n', game);
 });
@@ -79,7 +82,82 @@ reader.start();
 
 ### Sample output
 
-> Knife Juggler has moved from FRIENDLY DECK to FRIENDLY HAND
+```
+Starting game:
+ { mode: 'SOLO',
+  playerId: 1,
+  player:
+   { id: 1,
+     drew:
+      { EX1_249: { name: 'Baron Geddon': count: 1 },
+        EX1_085: { name: 'Mind Control Tech', count: 1 },
+        BRM_006: { name: 'Imp Gang Boss', count: 1 } }
+     hero: 'Gul\'dan',
+     heroId: 'HERO_07',
+     class: 'Warlock',
+     isPlayer: true,
+     name: 'Loki' },
+  opponent:
+   { id: 2,
+     hero: 'Garrosh Hellscream',
+     heroId: 'HERO_01',
+     class: 'Warrior',
+     name: 'The Innkeeper' },
+  turn: 1,
+  state: 'RUNNING',
+  start: Mon Apr 25 2016 15:37:21 GMT-0400 (EDT) }
+Loki drew Imp Gang Boss
+Loki mulliganed Imp Gang Boss
+Loki drew Zombie Chow
+Loki mulliganed Mind Control Tech
+Loki drew Dr. Boom
+Loki mulliganed Baron Geddon
+Starting turn 1 (Loki)
+Loki drew Soulfire
+Loki played Zombie Chow
+Starting turn 2 (The Innkeeper)
+The Innkeeper played Murloc Raider
+Starting turn 3 (Loki)
+Loki drew Fist of Jaraxxus
+Loki played Soulfire
+Loki discarded Dr. Boom
+Game Complete:
+ { mode: 'SOLO',
+  playerId: 1,
+  player:
+   { id: 1,
+     drew:
+      { BRM_006: { name: 'Imp Gang Boss', count: 1 },
+        FP1_001: { name: 'Zombie Chow', count: 1 },
+        GVG_110: { name: 'Dr. Boom', count: 1 },
+        EX1_308: { name: 'Soulfire', count: 1 },
+        AT_022: { name: 'Fist of Jaraxxus', count: 1 } },
+     hero: 'Gul\'dan',
+     heroId: 'HERO_07',
+     class: 'Warlock',
+     isPlayer: true,
+     name: 'Loki',
+     played:
+      { FP1_001: { name: 'Zombie Chow', count: 1 },
+        EX1_308: { name: 'Soulfire', count: 1 }},
+     discarded:
+      { GVG_110: { name: 'Dr. Boom', count: 1 } },
+     conceded: true,
+     result: 'LOST' },
+  opponent:
+   { id: 2,
+     hero: 'Garrosh Hellscream',
+     heroId: 'HERO_01',
+     class: 'Warrior',
+     name: 'The Innkeeper',
+     played:
+      { CS2_168: { name: 'Murloc Raider', count: 1 } },
+     result: 'WON' },
+  turn: 3,
+  state: 'COMPLETE',
+  start: Mon Apr 25 2016 15:37:21 GMT-0400 (EDT),
+  end: Mon Apr 25 2016 15:38:21 GMT-0400 (EDT) }
+```
 
 ### Video
 Here's a little demo video as well: (Video from [original fork](https://github.com/chevex-archived/hearthstone-log-watcher). Needs to be updated for this fork)
@@ -225,16 +303,38 @@ The `draw-card` event fires whenever a player draws a card.
 
 Callback Arguments:
 
-- **playerNum** - `1` for the user or `2` for the opponent
+- **player** - object representing the player that drew the card
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
 
-opponentopponent
+
 ```javascript
-logWatcher.on('draw-card', function(playerNum, cardId, cardName) {
-  console.log('Player', playerNum, 'drew', cardName, '(' + cardId + ')');
+logWatcher.on('draw-card', function(player, cardId, cardName) {
+  console.log('Player', player.name, 'drew', cardName, '(' + cardId + ')');
 });
 ```
+
+### **mulligan-card**
+
+The `mulligan-card` event fires whenever a player mulligans a card.
+
+Callback Arguments:
+
+- **player** - object representing the player that mulliganed the card
+- **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
+- **cardName** - the localized name of the card as it appears in the user's log files
+
+Example:
+
+```javascript
+logWatcher.on('mulligan-card', function(player, cardId, cardName) {
+  console.log('Player', player.name, 'mulliganed', cardName, '(' + cardId + ')');
+});
+```
+
+Sample output:
+
+> Player 1 mulliganed Dr. Boom (GVG_110)
 
 Sample output:
 
@@ -246,15 +346,15 @@ The `play-card` event fires whenever a player plays a card.
 
 Callback Arguments:
 
-- **playerNum** - `1` for the user or `2` for the opponent
+- **player** - object representing the player that played the card
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
 
 Example:
 
 ```javascript
-logWatcher.on('play-card', function(playerNum, cardId, cardName) {
-  console.log('Player', playerNum, 'played', cardName, '(' + cardId + ')');
+logWatcher.on('play-card', function(player, cardId, cardName) {
+  console.log('Player', player.name, 'played', cardName, '(' + cardId + ')');
 });
 ```
 
@@ -268,15 +368,15 @@ The `discard-card` event fires whenever a player discards a card.
 
 Callback Arguments:
 
-- **playerNum** - `1` for the user or `2` for the opponent
+- **player** - object representing the player that discarded the card
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
 
 Example:
 
 ```javascript
-logWatcher.on('discard-card', function(playerNum, cardId, cardName) {
-  console.log('Player', playerNum, 'discarded', cardName, '(' + cardId + ')');
+logWatcher.on('discard-card', function(player, cardId, cardName) {
+  console.log('Player', player.name, 'discarded', cardName, '(' + cardId + ')');
 });
 ```
 
