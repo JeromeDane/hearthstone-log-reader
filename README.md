@@ -1,10 +1,26 @@
 # Hearthstone Log Watcher
 
-This module is simple. It takes care of the low-level monitoring of the Hearthstone log file and emits events based on what happens in the log file. Use this module if you want to build your own Hearthstone deck tracker and don't want to do the work of parsing through the nasty log file yourself.
+This module is simple. It takes care of the low-level monitoring of the [Hearthstone](http://us.battle.net/hearthstone/) log file and emits events based on what happens in the log file. Use this module if you want to build your own [Hearthstone](http://us.battle.net/hearthstone/) deck tracker and don't want to do the work of parsing through the nasty log file yourself.
 
 - [Credits](#credits)
+- [Prerequisites](#prerequisites)
 - [Usage](#usage)
   - [Parse an existing log file](#parse-an-existing-log-file)
+- [Methods](#methods)
+  - [start()](#start)
+  - [stop()](#stop)
+  - [parseBuffer(buffer)](#parse-buffer-buffer)
+- [Events](#events)
+  - [game-start](#game-start)
+  - [game-complete](#game-complete)
+  - [draw-card](#draw-card)
+  - [play-card](#play-card)
+  - [discard-card](#discard-card)
+  - [zone-change](#zone-change)
+- [Testing](#testing)
+- [Planned](#planned)
+- [FAQ](#frequently-asked-questions)
+
 
 # [WORK IN PROGRESS]
 
@@ -17,6 +33,16 @@ This is a fork of [chevex-archived/hearthstone-log-watcher](https://github.com/c
 ## OUTDATED DOCUMENTATION ...
 
 Everything below this is a bit outdated. New features still need to be documented tests need to be updated. I will update all of this soon.
+
+## Prerequisites
+
+This [Hearthstone log](http://us.battle.net/hearthstone/) watcher is written as a node module, and assumes the following:
+
+1. You know JavaScript.
+2. You are familiar with [NodeJS](http://nodejs.org) and have it installed on your machine.
+3. You understand what `npm install` does, etc.
+
+If any of the statements above are not true, then ask Google for help before moving forward.
 
 ## Usage
 
@@ -86,7 +112,7 @@ Example game object:
 
 ```javascript
 {
-  player1: {
+  player: {
     drew: {
       GVG_110: { name: 'Dr. Boom', count: 1 },
       NEW1_030: { name: 'Deathwing', count: 1 },
@@ -101,7 +127,7 @@ Example game object:
     coin: true,
     name: 'Loki'
   },
-  player2: {
+  opponent: {
     id: 2,
     hero: 'Malfurion Stormrage',
     heroId: 'HERO_06',
@@ -109,7 +135,7 @@ Example game object:
     name: 'The Innkeeper'
   },
   turn: 1,
-  activePlayer: 2,
+  playerId: 1,
   state: 'RUNNING',
   start: 'Sun Apr 24 2016 09:09:24 GMT-0400 (EDT)'
 }
@@ -129,7 +155,7 @@ Example game object at the end of the game:
 
 ```javascript
 {
-  player1: {
+  player: {
     drew: {
       GVG_110: { name: 'Dr. Boom', count: 1 },
       EX1_308: { name: 'Soulfire', count: 2 },
@@ -144,14 +170,14 @@ Example game object at the end of the game:
     name: 'Loki',
     result: 'LOST',
     conceded: true,
-    played: {
+    opponent: {
       EX1_308: { name: 'Soulfire', count: 1 }
     },
     discarded: {
       EX1_249: { name: 'Baron Geddon', count: 1 }
     }
   },
-  player2: {
+  opponent: {
     id: 2,
     hero: 'Malfurion Stormrage',
     heroId: 'HERO_06',
@@ -163,14 +189,14 @@ Example game object at the end of the game:
     result: 'WON'
   },
   turn: 3,
-  activePlayer: 2,
+  playerId: 1,
   state: 'COMPLETE',
   start: 'Sun Apr 24 2016 09:09:24 GMT-0400 (EDT)',
   end: 'Sun Apr 24 2016 09:12:31 GMT-0400 (EDT)'
 }
 ```
 
-The `player1` and `player2` properties each have `played` and `discarded` properties that shows all cards each player played or discarded throughout the entire game. `player1` also has a `drew` property that shows all of the cards the user drew throughout the game.
+The `player` and `opponent` properties each have `played` and `discarded` properties that shows all cards each player played or discarded throughout the entire game. The `player` property also has a `drew` property that shows all of the cards the user drew throughout the game.
 
 This log watcher includes card names as they are written in the user's Hearthstone logs. If your application needs to be able to translate card names across locales, use the [Hearthstone JSON files](https://hearthstonejson.com/) to look up the localized names of cards by their ID.
 
@@ -184,8 +210,7 @@ Callback Arguments:
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
 
-Example:
-
+opponentopponent
 ```javascript
 logWatcher.on('draw-card', function(playerNum, cardId, cardName) {
   console.log('Player', playerNum, 'drew', cardName, '(' + cardId + ')');
@@ -276,6 +301,10 @@ Example zone change data object:
 ```
 
 Don't be confused by the `entityId` field. The ID is not consistent across games. Rather, the entity ID is an identifier that is assigned to that specific card for the duration of just that match. It is what you need in order to track a card's status as the game progresses. For example, if you have two Knife Jugglers in your deck, you need to be able to tell which one is which. The entity ID is the only way to track changes to a specific card during that game. The `cardId` field never changes however, and you may use it to look up card data in a card database such as the one found at [HearthstoneJSON.com](http://hearthstonejson.com).
+
+## Testing
+
+Tests need to be updated for this fork. Coming soon.
 
 ## Planned
 
