@@ -33,7 +33,7 @@ This project is based on [chevex-archived/hearthstone-log-watcher](https://githu
 
 ## Prerequisites
 
-This [Hearthstone log](http://us.battle.net/hearthstone/) reader is written as a node module, and assumes the following:
+This [Hearthstone](http://us.battle.net/hearthstone/) log reader is written as a node module, and assumes the following:
 
 1. You know JavaScript.
 2. You are familiar with [NodeJS](http://nodejs.org) and have it installed on your machine.
