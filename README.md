@@ -16,13 +16,14 @@ This module is simple. It takes care of the low-level monitoring of the [Hearths
   - [game-start](#game-start)
   - [game-complete](#game-complete)
   - [draw-card](#draw-card)
+  - [mulligan-card](#mulligan-card)
   - [play-card](#play-card)
   - [discard-card](#discard-card)
+  - [create-card](#create-card)
   - [zone-change](#zone-change)
 - [Testing](#testing)
 - [Planned](#planned)
 - [FAQ](#frequently-asked-questions)
-
 
 # [WORK IN PROGRESS]
 
@@ -383,6 +384,28 @@ logWatcher.on('discard-card', function(player, cardId, cardName) {
 Sample output:
 
 > Player 1 discarded Dr. Boom (GVG_110)
+
+### **create-card**
+
+The `create-card` event fires whenever a player gains a card that was not drawn from their deck such as when using the discover mechanic or cards like [Thoughtsteal](http://hearthstone.gamepedia.com/Thoughtsteal).
+
+Callback Arguments:
+
+- **player** - object representing the player that created the card
+- **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
+- **cardName** - the localized name of the card as it appears in the user's log files
+
+Example:
+
+```javascript
+logWatcher.on('create-card', function(player, cardId, cardName) {
+  console.log('Player', player.name, 'created', cardName, '(' + cardId + ')');
+});
+```
+
+Sample output:
+
+> Player 1 created Dr. Boom (GVG_110)
 
 ### **zone-change**
 
