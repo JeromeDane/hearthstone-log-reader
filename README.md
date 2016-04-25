@@ -4,7 +4,7 @@ This module is simple. It takes care of the low-level monitoring of the Hearthst
 
 - [Credits](#credits)
 - [Usage](#usage)
-  - [Parse an existing log file](parse-an-existing-log-file)
+  - [Parse an existing log file](#parse-an-existing-log-file)
 
 # [WORK IN PROGRESS]
 
