@@ -1,6 +1,8 @@
 # Hearthstone Log Reader
 
-This module is simple. It takes care of the low-level monitoring of the [Hearthstone](http://us.battle.net/hearthstone/) log file and emits events based on what happens in the log file. Use this module if you want to build your own Hearthstonedeck tracker and don't want to do the work of parsing through the nasty log file yourself.
+This node module takes care of the low-level monitoring of the [Hearthstone](http://us.battle.net/hearthstone/) log file and emits events based on what happens in the log file. Use this module if you want to build your own Hearthstonedeck tracker and don't want to do the work of parsing through the nasty log file yourself.
+
+This is still in BETA. Please [report any issues or requests](https://github.com/JeromeDane/hearthstone-log-reader/issues).
 
 - [Credits](#credits)
 - [Prerequisites](#prerequisites)
@@ -25,13 +27,9 @@ This module is simple. It takes care of the low-level monitoring of the [Hearths
 - [Planned](#planned)
 - [FAQ](#frequently-asked-questions)
 
-# [WORK IN PROGRESS]
-
-This fork is a work in progress and is currently still under heavy development. Stay tuned for updates.
-
 ## Credits
 
-This project is a heavily modified fork of [chevex-archived/hearthstone-log-watcher](https://github.com/chevex-archived/hearthstone-log-watcher), which I used to bootstrap my log file monitoring and initial parsing code. This fork adds functionality that may be beyond the scope of the original project. I also wanted to be able hack this as needed for my own work, which is why a fork was created instead of submitting pull requests. All credit for the base log file reading and initial parsing methods goes to the authors of the [original fork](https://github.com/chevex-archived/hearthstone-log-watcher).
+This project is based on [chevex-archived/hearthstone-log-watcher](https://github.com/chevex-archived/hearthstone-log-watcher), which I used to bootstrap my log file monitoring and initial parsing code. There is new functionality that may be beyond the scope of the original project. I also wanted to be able hack this as needed for my own work, and maintain my own issues, which is why a new repo was created instead of submitting pull requests. All credit for the base log file reading and initial parsing methods goes to the authors of the [original fork](https://github.com/chevex-archived/hearthstone-log-watcher).
 
 ## Prerequisites
 
@@ -161,7 +159,7 @@ Game Complete:
 ```
 
 ### Video
-Here's a little demo video as well: (Video from [original fork](https://github.com/chevex-archived/hearthstone-log-watcher). Needs to be updated for this fork)
+Here's a little demo video as well: (Video from [original project](https://github.com/chevex-archived/hearthstone-log-watcher). Needs to be updated for this project, but it'll give you an idea of what this can do.)
 
 [![](http://i.imgur.com/tKtxS8L.png)](http://www.youtube.com/watch?v=ccXEcKrZxu4)
 
@@ -450,7 +448,7 @@ Tests need to be updated for this fork. Coming soon.
 
 ## Planned
 
-Right now the log watcher only emits three events. The Hearthstone log contains A LOT of data and I believe there are a lot more events that this module *could* emit. For example, I believe there is enough data in the log to even track the damage/buff states of the minions in play. I'm going to experiment with the log more and see if I can pull out more useful data and provide useful events.
+There are a lot more events in the Hearthstone log that could theoretically be pulled out like using hero powers, attaching with minions, target spells, etc. Will add more event parsing as possible.
 
 ## Frequently Asked Questions
 
