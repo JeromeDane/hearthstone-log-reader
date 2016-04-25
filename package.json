@@ -1,6 +1,6 @@
 {
   "name": "hearthstone-log-reader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Node module that monitors Hearthstone log file for changes and emits important events.",
   "main": "index.js",
   "dependencies": {
