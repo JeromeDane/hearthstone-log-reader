@@ -1,6 +1,6 @@
 # Hearthstone Log Reader
 
-This module is simple. It takes care of the low-level monitoring of the [Hearthstone](http://us.battle.net/hearthstone/) log file and emits events based on what happens in the log file. Use this module if you want to build your own [Hearthstone](http://us.battle.net/hearthstone/) deck tracker and don't want to do the work of parsing through the nasty log file yourself.
+This module is simple. It takes care of the low-level monitoring of the [Hearthstone](http://us.battle.net/hearthstone/) log file and emits events based on what happens in the log file. Use this module if you want to build your own Hearthstonedeck tracker and don't want to do the work of parsing through the nasty log file yourself.
 
 - [Credits](#credits)
 - [Prerequisites](#prerequisites)
@@ -32,7 +32,7 @@ This project is a heavily modified fork of [chevex-archived/hearthstone-log-watc
 
 ## Prerequisites
 
-This [Hearthstone log](http://us.battle.net/hearthstone/) watcher is written as a node module, and assumes the following:
+This [Hearthstone log](http://us.battle.net/hearthstone/) reader is written as a node module, and assumes the following:
 
 1. You know JavaScript.
 2. You are familiar with [NodeJS](http://nodejs.org) and have it installed on your machine.
@@ -42,7 +42,7 @@ If any of the statements above are not true, then ask Google for help before mov
 
 ## Usage
 
-> $ npm install hearthstone-log-watcher
+> $ npm install hearthstone-log-reader
 
 ```javascript
 var LogWatcher = require('hearthstone-log-watcher');
@@ -59,7 +59,7 @@ Here's an example of the output from the above script:
 
 > Knife Juggler has moved from FRIENDLY DECK to FRIENDLY HAND
 
-Here's a little demo video as well:
+Here's a little demo video as well: (needs to be updated for this fork)
 
 [![](http://i.imgur.com/tKtxS8L.png)](http://www.youtube.com/watch?v=ccXEcKrZxu4)
 
