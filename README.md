@@ -5,7 +5,9 @@ This module is simple. It takes care of the low-level monitoring of the [Hearths
 - [Credits](#credits)
 - [Prerequisites](#prerequisites)
 - [Usage](#usage)
-  - [Parse an existing log file](#parse-an-existing-log-file)
+  - [Example](#example)
+  - [Sample Output](#sample-output)
+  - [Video](#video)
 - [Methods](#methods)
   - [start()](#start)
   - [stop()](#stop)
@@ -42,24 +44,45 @@ If any of the statements above are not true, then ask Google for help before mov
 
 ## Usage
 
-> $ npm install hearthstone-log-reader
+Install this package in your app:
+
+```bash
+npm install hearthstone-log-reader --save
+```
+### Example
 
 ```javascript
-var LogWatcher = require('hearthstone-log-watcher');
-var logWatcher = new LogWatcher();
+var LogReader = require('hearthstone-log-reader');
+var reader = new LogReader();
 
-logWatcher.on('zone-change', function (data) {
-  console.log(data.cardName + ' has moved from ' + data.fromTeam + ' ' + data.fromZone + ' to ' + data.toTeam + ' ' + data.toZone);
+reader.on('game-start', function(game) {
+  console.log('Starting game:\n', game);
+});
+reader.on('turn-start', function(turn, player) {
+  console.log('Starting turn', turn, '(player ' + player.name + ')');
+})
+reader.on('play-card', function(player, cardId, cardName) {
+  console.log(player.name, 'played', cardName);
+})
+reader.on('draw-card', function(player, cardId, cardName) {
+  console.log(player.name, 'drew', cardName);
+})
+reader.on('discard-card', function(player, cardId, cardName) {
+  console.log(player.name, 'discarded', cardName);
+})
+reader.on('game-complete', function(game) {
+  console.log('Game Complete:\n', game);
 });
 
-logWatcher.start();
+reader.start();
 ```
 
-Here's an example of the output from the above script:
+### Sample output
 
 > Knife Juggler has moved from FRIENDLY DECK to FRIENDLY HAND
 
-Here's a little demo video as well: (needs to be updated for this fork)
+### Video
+Here's a little demo video as well: (Video from [original fork](https://github.com/chevex-archived/hearthstone-log-watcher). Needs to be updated for this fork)
 
 [![](http://i.imgur.com/tKtxS8L.png)](http://www.youtube.com/watch?v=ccXEcKrZxu4)
 
