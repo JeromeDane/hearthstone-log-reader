@@ -87,7 +87,7 @@ LogWatcher.prototype.start = function () {
   };
 };
 
-LogWatcher.prototype._games = {};
+LogWatcher.prototype._games = [];
 
 LogWatcher.prototype.stop = function () {};
 
