@@ -11,6 +11,7 @@ This is still in BETA. Please [report any issues or requests](https://github.com
   - [Sample Output](#sample-output)
   - [Video](#video)
 - [Methods](#methods)
+  - [on()](#onevent-name-callback)
   - [start()](#start)
   - [stop()](#stop)
   - [parseBuffer(buffer)](#parse-buffer-buffer)
@@ -166,14 +167,14 @@ Here's a little demo video as well: (Video from [original project](https://githu
 
 ### Parse an existing log file
 
-`logWatcher.start()` begins reading any updates to the Hearthstone log file that occur after it has begun watching. If you need to parse a log from the beginning, you can use `parseBuffer`.
+`reader.start()` begins reading any updates to the Hearthstone log file that occur after it has begun watching. If you need to parse a log from the beginning, you can use `parseBuffer`.
 
 ```javascript
 var fs = require('fs');
 
 fs.readFile('./my-old-player-log.log', function(err, buffer) {
   if (err) return console.error(err);
-  logWatcher.parseBuffer(buffer);
+  reader.parseBuffer(buffer);
 });
 ```
 
@@ -328,7 +329,7 @@ Callback Arguments:
 - **game** - Object representing the current state of the game
 
 ```javascript
-logWatcher.on('draw-card', function(player, cardId, cardName) {
+reader.on('draw-card', function(player, cardId, cardName) {
   console.log('Player', player.name, 'drew', cardName, '(' + cardId + ')');
 });
 ```
@@ -347,7 +348,7 @@ Callback Arguments:
 Example:
 
 ```javascript
-logWatcher.on('mulligan-card', function(player, cardId, cardName) {
+reader.on('mulligan-card', function(player, cardId, cardName) {
   console.log('Player', player.name, 'mulliganed', cardName, '(' + cardId + ')');
 });
 ```
@@ -374,7 +375,7 @@ Callback Arguments:
 Example:
 
 ```javascript
-logWatcher.on('play-card', function(player, cardId, cardName) {
+reader.on('play-card', function(player, cardId, cardName) {
   console.log('Player', player.name, 'played', cardName, '(' + cardId + ')');
 });
 ```
@@ -397,7 +398,7 @@ Callback Arguments:
 Example:
 
 ```javascript
-logWatcher.on('discard-card', function(player, cardId, cardName) {
+reader.on('discard-card', function(player, cardId, cardName) {
   console.log('Player', player.name, 'discarded', cardName, '(' + cardId + ')');
 });
 ```
@@ -420,7 +421,7 @@ Callback Arguments:
 Example:
 
 ```javascript
-logWatcher.on('create-card', function(player, cardId, cardName) {
+reader.on('create-card', function(player, cardId, cardName) {
   console.log('Player', player.name, 'created', cardName, '(' + cardId + ')');
 });
 ```
