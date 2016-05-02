@@ -101,13 +101,14 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
   // Iterate over each line in the buffer.
   buffer.toString().split(this.options.endOfLineChar).forEach(function (line) {
 
-    if(line.replace(/\s/g, '') !== '')
-      self.trigger('log-line', line);
-
     // always have a current game instance in place
     if(!self._games.current) {
       self._games.current = new Game();
     }
+
+    if(line.replace(/\s/g, '') !== '')
+      self.trigger('log-line', line, self._games.current);
+
 
     parseZoneChangeLogEvent(line, self);
     parsePlayerLogEvent(line, self);

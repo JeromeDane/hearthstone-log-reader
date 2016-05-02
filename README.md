@@ -15,6 +15,7 @@ This is still in BETA. Please [report any issues or requests](https://github.com
   - [stop()](#stop)
   - [parseBuffer(buffer)](#parse-buffer-buffer)
 - [Events](#events)
+  - [log-line](#log-line)
   - [game-start](#game-start)
   - [game-complete](#game-complete)
   - [draw-card](#draw-card)
@@ -178,6 +179,10 @@ fs.readFile('./my-old-player-log.log', function(err, buffer) {
 
 ## Methods
 
+### on([event-name], [callback])
+
+Listen for an event. `event-name` is a string representing the name of the event you want to listen for. `callback` is a function that takes several callback arguments. See [Events](#events) section below for available events and their callback arguments.
+
 ### start()
 
 Starts watching the log file and parses any changes to it.
@@ -194,11 +199,26 @@ Useful if you have log files that you want to parse without watching them. See t
 
 ## Events
 
-The available events you can listen for are as follows:
+Events can be listened to as in the following example:
+
+```javascript
+reader.on('log-line', function(line, game) {
+  // do stuff
+})
+```
+
+### **log-line**
+
+The `log-line` event fires every time a new line is read from the Hearthstone event logs.
+
+Callback Arguments:
+
+- **line** - String of the line that was read from the hearthstone event logs
+- **game** - Object representing the current state of the game
 
 ### **game-start**
 
-The `game-start` event fires at the beginning of a match when the watcher has gathered enough data from the log to determine which of the two players is the local player. It was a lot more complicated to figure that out than one might think, so this event is pretty valuable because it eliminates the guess work. Not even the hearthstats deck tracker can determine what player is the local player ;)
+The `game-start` event fires at the beginning of a match when the watcher has gathered enough data from the log to determine which of the two players is the local player.
 
 Callback Arguments:
 
@@ -305,7 +325,7 @@ Callback Arguments:
 - **player** - object representing the player that drew the card
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
-
+- **game** - Object representing the current state of the game
 
 ```javascript
 logWatcher.on('draw-card', function(player, cardId, cardName) {
@@ -322,6 +342,7 @@ Callback Arguments:
 - **player** - object representing the player that mulliganed the card
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
+- **game** - Object representing the current state of the game
 
 Example:
 
@@ -348,6 +369,7 @@ Callback Arguments:
 - **player** - object representing the player that played the card
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
+- **game** - Object representing the current state of the game
 
 Example:
 
@@ -370,6 +392,7 @@ Callback Arguments:
 - **player** - object representing the player that discarded the card
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
+- **game** - Object representing the current state of the game
 
 Example:
 
@@ -392,6 +415,7 @@ Callback Arguments:
 - **player** - object representing the player that created the card
 - **cardId** - Hearthstone card ID as found in the [Hearthstone JSON files](https://hearthstonejson.com/)
 - **cardName** - the localized name of the card as it appears in the user's log files
+- **game** - Object representing the current state of the game
 
 Example:
 
