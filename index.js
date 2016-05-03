@@ -107,8 +107,7 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
     }
 
     if(line.replace(/\s/g, '') !== '')
-      self.trigger('log-line', line, self._games.current);
-
+      self.emit('log-line', line, self._games.current);
 
     parseZoneChangeLogEvent(line, self);
     parsePlayerLogEvent(line, self);
